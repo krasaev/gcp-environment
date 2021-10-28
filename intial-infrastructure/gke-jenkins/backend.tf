@@ -1,5 +1,5 @@
 terraform {
   backend "gcs" {
-    bucket = "${var.project_id}-tfstate"
+    bucket = "<THIS WILL BE REPLACED VIA -backend-config>"
   }
 }
