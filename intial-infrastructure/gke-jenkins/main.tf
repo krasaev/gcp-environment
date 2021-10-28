@@ -122,7 +122,7 @@ resource "kubernetes_secret" "git-secrets" {
 }
 
 resource "google_storage_bucket_iam_member" "tf-state-writer" {
-  bucket = "tf-state-${var.project_id}"
+  bucket = var.tf-state-bucket
   role   = "roles/storage.admin"
   member = module.create_workload_identity.gcp_service_account_fqn
 }

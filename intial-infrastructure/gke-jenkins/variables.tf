@@ -7,6 +7,10 @@ variable "region" {
   default     = "europe-north1"
 }
 
+variable "tf-state-bucket" {
+  description = "The terraform state bucket name"
+}
+
 # TODO revise
 variable "zones" {
   description = "The GCP zone to deploy gke into"
@@ -27,10 +31,12 @@ variable "network_name" {
   description = "Name for the VPC network"
   default     = "jenkins-network"
 }
+
 variable "subnet_ip" {
   description = "IP range for the subnet"
   default     = "10.10.10.0/24"
 }
+
 variable "subnet_name" {
   description = "Name for the subnet"
   default     = "jenkins-subnet"
