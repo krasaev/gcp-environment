@@ -14,7 +14,7 @@ sudo mv terraform /usr/local/bin/
 rm terraform_1.0.9_linux_amd64.zip
 
 # cd jenkins-gke/tf-gke/
-terraform init -backend-config="bucket=$STATE_BUCKET_NAME"
+terraform init -backend-config="bucket=$STATE_BUCKET_NAME" -var="project_id=$PROJECT_ID"
 # terraform plan --var "github_username=$GITHUB_USER" --var "github_token=$GITHUB_TOKEN"
 # terraform apply --auto-approve --var "github_username=$GITHUB_USER" --var "github_token=$GITHUB_TOKEN"
 #

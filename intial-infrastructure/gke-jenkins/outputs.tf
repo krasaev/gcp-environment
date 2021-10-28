@@ -13,6 +13,7 @@ output "client_token" {
 output "ca_certificate" {
   description = "The cluster ca certificate (base64 encoded)"
   value       = module.create-gke.ca_certificate
+  sensitive = true
 }
 
 output "service_account" {
@@ -38,6 +39,7 @@ output "gcp_service_account_email" {
 output "jenkins_k8s_config_secrets" {
   description = "Name of the secret required to configure k8s executers on Jenkins"
   value       = var.jenkins_k8s_config
+  sensitive = true
 }
 
 output "jenkins_project_id" {
