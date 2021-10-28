@@ -12,6 +12,7 @@ credentials.json
 # .tfstate files
 **/*.tfstate
 **/*.tfstate.*
+**/*.lock.hcl
 
 #mac
 .DS_Store
