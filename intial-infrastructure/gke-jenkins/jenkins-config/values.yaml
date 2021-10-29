@@ -13,6 +13,7 @@ controller:
     - blueocean:1.25.1
     - job-dsl:1.78.1
     - configuration-as-code:1.54
+    - github-oauth:0.34
   resources:
     requests:
       cpu: "50m"
@@ -21,8 +22,7 @@ controller:
       cpu: "1"
       memory: "2500Mi"
   javaOpts: "-Xms2500m -Xmx2500m"
-  serviceType: LoadBalancer
-  servicePort: 80
+  serviceType: ClusterIP
 agent:
   resources:
     requests:
@@ -32,7 +32,7 @@ agent:
       cpu: "1"
       memory: "512Mi"
 persistence:
-  size: 10Gi
+  size: 100Gi
 serviceAccount:
   name: cd-jenkins
 

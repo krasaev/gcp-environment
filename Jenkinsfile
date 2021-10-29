@@ -1,113 +1,84 @@
-/**
- * Copyright 2020 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// podTemplate(label: 'build', containers: [
+//     containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true)
+//   ],
+//   volumes: [
+//     hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
+//   ]
+//   ) {
+//     node('build') {
+//       container('docker') {
+//         sh 'docker version'
+//       }
+//     }
+//   }
 
-pipeline {
-  agent {
-      label "terraform-exec"
-  }
-  stages {
-    // [START tf-init, tfdfdfd-validatea]
-    stage('TF init & validate') {
-      when { anyOf {branch "prod";branch "dev";changeRequest() } }
-      steps {
-        container('terraform') {
-          sh '''
-          if [[ $CHANGE_TARGET ]]; then
-            TARGET_ENV=$CHANGE_TARGET
-          else
-            TARGET_ENV=$BRANCH_NAME
-          fi
+node('node') {
 
-          if [ -d "example-pipelines/environments/${TARGET_ENV}/" ]; then
-            cd example-pipelines/environments/${TARGET_ENV}
-            terraform init
-            terraform validate
-          else
-            for dir in example-pipelines/environments/*/
-            do 
-              cd ${dir}
-              env=${dir%*/}
-              env=${env#*/}
-              echo ""
-              echo "*************** TERRAFOM INIT and VALIDATE ******************"
-              echo "******* At environment: ${env} ********"
-              echo "*************************************************"
-              terraform init || exit 1
-              terraform validate || exit 1
-              cd ../../../
-            done
-          fi'''
-        }
-      }
+
+    currentBuild.result = "SUCCESS"
+
+    try {
+
+       stage('Checkout'){
+
+          checkout scm
+       }
+
+       stage('Test'){
+
+         env.NODE_ENV = "test"
+
+         print "Environment will be : ${env.NODE_ENV}"
+
+         sh 'node -v'
+         sh 'npm prune'
+         sh 'npm install'
+         sh 'npm test'
+
+       }
+
+       stage('Build Docker'){
+
+            sh './dockerBuild.sh'
+       }
+
+       stage('Deploy'){
+
+         echo 'Push to Repo'
+         sh './dockerPushToRepo.sh'
+
+         echo 'ssh to web server and tell it to pull new image'
+         sh 'ssh deploy@xxxxx.xxxxx.com running/xxxxxxx/dockerRun.sh'
+
+       }
+
+       stage('Cleanup'){
+
+         echo 'prune and cleanup'
+         sh 'npm prune'
+         sh 'rm node_modules -rf'
+
+         mail body: 'project build successful',
+                     from: 'xxxx@yyyyy.com',
+                     replyTo: 'xxxx@yyyy.com',
+                     subject: 'project build successful',
+                     to: 'yyyyy@yyyy.com'
+       }
+
+
+
     }
-    // [END tf-init, tf-validate]
+    catch (err) {
 
-    // [START tf-plan]
-    stage('TF plan') {
-      when { anyOf {branch "prod";branch "dev";changeRequest() } }
-      steps {
-        container('terraform') {
-          sh '''
-          if [[ $CHANGE_TARGET ]]; then
-            TARGET_ENV=$CHANGE_TARGET
-          else
-            TARGET_ENV=$BRANCH_NAME
-          fi
-         
-          if [ -d "example-pipelines/environments/${TARGET_ENV}/" ]; then
-            cd example-pipelines/environments/${TARGET_ENV}
-            terraform plan
-          else
-            for dir in example-pipelines/environments/*/
-            do 
-              cd ${dir}
-              env=${dir%*/}
-              env=${env#*/}
-              echo ""
-              echo "*************** TERRAFOM PLAN ******************"
-              echo "******* At environment: ${env} ********"
-              echo "*************************************************"
-              terraform plan || exit 1
-              cd ../../../
-            done
-          fi'''
-        }
-      }
+        currentBuild.result = "FAILURE"
+
+            mail body: "project build error is here: ${env.BUILD_URL}" ,
+            from: 'xxxx@yyyy.com',
+            replyTo: 'yyyy@yyyy.com',
+            subject: 'project build failed',
+            to: 'zzzz@yyyyy.com'
+
+        throw err
     }
-    // [END tf-plan]
 
-    // [START tf-apply]
-    stage('TF Apply') {
-      when { anyOf {branch "prod";branch "dev" } }
-      steps {
-        container('terraform') {
-          sh '''
-          TARGET_ENV=$BRANCH_NAME
-
-          if [ -d "example-pipelines/environments/${TARGET_ENV}/" ]; then
-            cd example-pipelines/environments/${TARGET_ENV}
-            terraform apply -input=false -auto-approve
-          else
-            echo "*************** SKIPPING APPLY ******************"
-            echo "Branch '$TARGET_ENV' does not represent an official environment."
-            echo "*************************************************"
-          fi'''
-        }
-      }
-    }
-    // [END tf-apply]
-  }
 }
