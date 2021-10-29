@@ -1,0 +1,134 @@
+controller:
+  tag: "2.318-jdk11"
+  installPlugins:
+    - kubernetes:1.30.5
+    - workflow-job:2.42
+    - workflow-aggregator:2.6
+    - credentials-binding:1.27
+    - git:4.9.0
+    - google-oauth-plugin:1.0.6
+    - google-source-plugin:0.4
+    - google-kubernetes-engine:0.8.6
+    - google-storage-plugin:1.5.4
+    - blueocean:1.25.1
+    - job-dsl:1.78.1
+    - configuration-as-code:1.54
+    - github-oauth:0.34
+    - ansicolor:1.0.0
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "1024Mi"
+    limits:
+      cpu: "1"
+      memory: "1024Mi"
+  javaOpts: "-Xms1024m -Xmx1024m"
+  servicePort: 80
+  serviceType: LoadBalancer
+  additionalExistingSecrets:
+    - name: jenkins-config
+      keyName: git-app-id
+    - name: jenkins-config
+      keyName: git-private-key
+    - name: jenkins-config
+      keyName: git-org-name
+    - name: jenkins-config
+      keyName: project-id
+    - name: jenkins-config
+      keyName: jenkins-tf-ksa
+  JCasC:
+    defaultConfig: true
+    configScripts:
+      plugins-config: |
+        unclassified:
+          ansiColorBuildWrapper:
+            globalColorMapName: "xterm"
+      credentials: |
+        credentials:
+          system:
+            domainCredentials:
+              - credentials:
+                  - gitHubApp:
+                      id: "github-org"
+                      appID: ${jenkins-config-git-app-id}
+                      privateKey: ${jenkins-config-git-private-key}
+      init-jobs: |
+        jobs:
+          - script: >
+                multibranchPipelineJob('Deploy the application') {
+                    factory {
+                      workflowBranchProjectFactory {
+                          scriptPath('environments/Jenkinsfile')
+                      }
+                    }
+                    branchSources {
+                      github {
+                          id('23232323')
+                          scanCredentialsId('github-org')
+                          repoOwner('${jenkins-config-git-org-name}')
+                          repository("gcp-environment")
+                          buildOriginBranch(true)
+                          buildOriginPRMerge(true)
+                          includes("dev prod PR*")
+                      }
+                    }
+                    orphanedItemStrategy {
+                      discardOldItems {
+                          numToKeep(10)
+                      }
+                    }
+                    triggers {
+                      cron('@daily')
+                    }
+                }
+
+          - script: >
+                organizationFolder('${jenkins-config-git-org-name}') {
+                    triggers {
+                      cron('@daily')
+                    }
+                    organizations {
+                        github {
+                            repoOwner('${jenkins-config-git-org-name}')
+                            apiUri("https://api.github.com")
+                            credentialsId('github-org')
+                            traits {
+                                gitHubBranchDiscovery {
+                                  strategyId(1)
+                                }
+                            }
+                        }
+                    }
+                    projectFactories {
+                        workflowMultiBranchProjectFactory {
+                            scriptPath("Jenkinsfile")
+                        }
+                    }
+                }
+agent:
+  podTemplates:
+    terraform: |
+      - name: terraform
+        label: terraform-exec
+        serviceAccount: "${jenkins-config-jenkins-tf-ksa}"
+        containers:
+          - name: terraform
+            image: "hashicorp/terraform:1.0.10"
+            command: "/bin/sh -c"
+            alwaysPullImage: false
+            args: "cat"
+            ttyEnabled: true
+            resourceRequestCpu: "100m"
+            resourceLimitCpu: "500m"
+            resourceRequestMemory: "500Mi"
+            resourceLimitMemory: "1Gi"
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "256Mi"
+    limits:
+      cpu: "1"
+      memory: "512Mi"
+
+serviceAccount:
+  name: cd-jenkins

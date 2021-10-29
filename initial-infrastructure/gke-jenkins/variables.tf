@@ -11,7 +11,6 @@ variable "tf-state-bucket" {
   description = "The terraform state bucket name"
 }
 
-# TODO revise
 variable "zones" {
   description = "The GCP zone to deploy gke into"
   default     = ["europe-north1-a"]
@@ -29,7 +28,7 @@ variable "ip_range_services_name" {
 
 variable "network_name" {
   description = "Name for the VPC network"
-  default     = "jenkins-network"
+  default     = "k8s-network"
 }
 
 variable "subnet_ip" {
@@ -39,23 +38,27 @@ variable "subnet_ip" {
 
 variable "subnet_name" {
   description = "Name for the subnet"
-  default     = "jenkins-subnet"
+  default     = "k8s-subnet"
 }
 
-variable "jenkins_k8s_config" {
+variable "k8s_config" {
   description = "Name for the k8s secret required to configure k8s executers on Jenkins"
-  default     = "jenkins-k8s-config"
+  default     = "k8s-config"
 }
 
-variable "git_username" {
-  description = "Github user/organization name where the terraform repo resides."
+variable "jenkins_namespace" {
+  description = "Name of namespace where jenkins will be deployed"
+  default     = "jenkins"
 }
 
-variable "git_token" {
-  description = "Github token to access repo."
+variable "git-app-id" {
+  description = "Github organization id"
 }
 
-variable "git_repo" {
-  description = "Github repo name."
-  default     = "gcp-env"
+variable "git-org-name" {
+  description = "Github organization name"
+}
+
+variable "git-private-key" {
+  description = "Github organization private key"
 }
