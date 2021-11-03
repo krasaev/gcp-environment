@@ -1,0 +1,27 @@
+grafana:
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          folder: ''
+          options:
+            path: /var/lib/grafana/dashboards/default
+  dashboards:
+    default:
+      jvm-micrometer:
+        gnetId: 4701
+        revision: 9
+        datasource: Prometheus
+prometheus:
+  additionalServiceMonitors:
+    - name: "spring-actuator-prometheus-monitor"
+      namespaceSelector:
+        any: true
+      selector:
+        matchLabels:
+          monitor: spring-actuator-prometheus-monitor
+      endpoints:
+        - port: http
+          path: /actuator/prometheus
+          interval: 10s
