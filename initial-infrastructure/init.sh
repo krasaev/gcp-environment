@@ -10,14 +10,20 @@ if [ -z "$2" ]; then
     exit 1
 fi
 
-if [ -z "$2" ]; then
+if [ -z "$3" ]; then
     echo -e "\nPlease provide github app private key!\n"
+    exit 1
+fi
+
+if [ -z "$4" ]; then
+    echo -e "\nPlease provide domain name!\n"
     exit 1
 fi
 
 GITHUB_ORG_NAME=$1
 GITHUB_APP_ID=$2
 GITHUB_PRIVATE_KEY=$3
+DOMAIN=$4
 
 # set current project
 PROJECT_ID=$(gcloud config get-value project)
@@ -27,18 +33,20 @@ STATE_BUCKET_NAME=${PROJECT_ID}-tfstate
 gsutil mb gs://"$STATE_BUCKET_NAME"
 gsutil versioning set on gs://"${PROJECT_ID}"-tfstate
 
-cd gke-jenkins/ || exit 1
+cd gke/ || exit 1
 
-wget https://releases.hashicorp.com/terraform/1.0.10/terraform_1.0.10_linux_amd64.zip
-unzip terraform_1.0.10_linux_amd64.zip
-sudo mv terraform /usr/local/bin/
-rm terraform_1.0.10_linux_amd64.zip
+if ! type "terraform" > /dev/null; then
+  wget https://releases.hashicorp.com/terraform/1.0.10/terraform_1.0.10_linux_amd64.zip
+  unzip terraform_1.0.10_linux_amd64.zip
+  sudo mv terraform /usr/local/bin/
+  rm terraform_1.0.10_linux_amd64.zip
+fi
 
 #FIXME fix terraform
 gcloud services enable compute.googleapis.com
 
-terraform init -backend-config="bucket=$STATE_BUCKET_NAME" -var="project_id=$PROJECT_ID" -var="git-org-nam=$GITHUB_ORG_NAME" -var="git-app-id=$GITHUB_APP_ID" -var="git-private-key=$GITHUB_PRIVATE_KEY" -var="tf-state-bucket=$STATE_BUCKET_NAME" || exit 1
-terraform apply -auto-approve -var="project_id=$PROJECT_ID" -var="git-org-name=$GITHUB_ORG_NAME" -var="git-app-id=$GITHUB_APP_ID" -var="git-private-key=$GITHUB_PRIVATE_KEY" -var="tf-state-bucket=$STATE_BUCKET_NAME" || exit 1
+terraform init -backend-config="bucket=$STATE_BUCKET_NAME" -var="project_id=$PROJECT_ID" -var="git-org-nam=$GITHUB_ORG_NAME" -var="git-app-id=$GITHUB_APP_ID" -var="git-private-key=$GITHUB_PRIVATE_KEY" -var="tf-state-bucket=$STATE_BUCKET_NAME" -var="ingress_domain=$DOMAIN" || exit 1
+terraform apply -auto-approve -var="project_id=$PROJECT_ID" -var="git-org-name=$GITHUB_ORG_NAME" -var="git-app-id=$GITHUB_APP_ID" -var="git-private-key=$GITHUB_PRIVATE_KEY" -var="tf-state-bucket=$STATE_BUCKET_NAME" -var="ingress_domain=$DOMAIN" || exit 1
 
 export ZONE=$(terraform output -raw zone)
 export CLUSTER_NAME=$(terraform output -raw cluster_name)

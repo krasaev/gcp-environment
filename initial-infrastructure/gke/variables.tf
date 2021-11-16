@@ -41,7 +41,7 @@ variable "subnet_name" {
   default     = "k8s-subnet"
 }
 
-variable "k8s_config" {
+variable "gke_config" {
   description = "Name for the k8s secret required to configure k8s executers on Jenkins"
   default     = "k8s-config"
 }
@@ -49,6 +49,16 @@ variable "k8s_config" {
 variable "jenkins_namespace" {
   description = "Name of namespace where jenkins will be deployed"
   default     = "jenkins"
+}
+
+variable "efk_namespace" {
+  description = "Name of namespace where EFK stack will be deployed"
+  default     = "logging"
+}
+
+variable "prometheus_namespace" {
+  description = "Name of namespace where Prometheus stack will be deployed"
+  default     = "monitoring"
 }
 
 variable "git-app-id" {
@@ -61,4 +71,9 @@ variable "git-org-name" {
 
 variable "git-private-key" {
   description = "Github organization private key"
+}
+
+variable "ingress_domain" {
+  description = "Domain address"
+  default     = "dev"
 }
