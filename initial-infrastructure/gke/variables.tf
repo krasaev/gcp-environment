@@ -61,6 +61,11 @@ variable "prometheus_namespace" {
   default     = "monitoring"
 }
 
+variable "sonar_namespace" {
+  description = "Name of namespace where SonarQube stack will be deployed"
+  default     = "sonarqube"
+}
+
 variable "git-app-id" {
   description = "Github organization id"
 }
@@ -75,5 +80,13 @@ variable "git-private-key" {
 
 variable "ingress_domain" {
   description = "Domain address"
-  default     = "dev"
+  default     = "gcp-dev-infra.com"
+}
+
+variable "ingress_domain_cert_private_key" {
+  description = "Domain certificate private key path"
+}
+
+variable "ingress_domain_cert_public_key" {
+  description = "Domain certificate public key path"
 }

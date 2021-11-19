@@ -73,6 +73,7 @@ module "gke" {
       auto_upgrade = true
     }
   ]
+  depends_on = [google_compute_ssl_certificate.env_domain_cert]
 }
 
 # allow GKE to pull images from GCR
@@ -102,8 +103,8 @@ locals {
     self_domain    = var.ingress_domain
   }
   domains_cert = {
-    priv_key = fileexists("${path.module}/domain_private.key") ? file("${path.module}/domain_private.key") : tls_self_signed_cert.domain_self_signed_cert[0].private_key_pem
-    cert     = fileexists("${path.module}/domain_certificate.key") ? file("${path.module}/domain_certificate.key") : tls_self_signed_cert.domain_self_signed_cert[0].cert_pem
+    priv_key = var.ingress_domain_cert_private_key != "" ? file(var.ingress_domain_cert_private_key) : tls_self_signed_cert.domain_self_signed_cert[0].private_key_pem
+    cert     = var.ingress_domain_cert_public_key != "" ? file(var.ingress_domain_cert_public_key) : tls_self_signed_cert.domain_self_signed_cert[0].cert_pem
   }
 }
 

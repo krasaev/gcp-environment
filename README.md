@@ -1,18 +1,28 @@
-Init environment:
+<h2>Initializing infrastructure:</h2>
 
-1. Clone the repo into gcloud shell
-2. cd gcp-environment/initial-infrastructure
-3. chmod +x init.sh destroy.sh
-4. ./init.sh "{ORG_NAME}" "{ORG_APP_ID}" "{ORG_APP_PRIVATE_KEY}"
-5. copy jenkins url/creds
+1. clone the repo into gcloud shell
+2. prepare config file
+    ```properties
+    domain.name=example.com
+    # leave domain.cert.* empty to generate self-signed certificates
+    domain.cert.private-key-file=
+    domain.cert.public-key-file=
+    github.organization.name=example
+    github.jenkins.app-id=example
+    github.jenkins.private-key-file=./jenkins-github-private-key.key
+    ```
+3. cd gcp-environment/initial-infrastructure
+4. run ./init.sh /path/to/config.properties
+5. use provided service's url/creds
 
-Destroy
+<h2>Destroying infrastructure</h2>
 
-1. ./destroy.sh
+1. cd gcp-environment/initial-infrastructure
+2. run ./destroy.sh
 
-Service monitoring
+<h2>Service monitoring:</h2>
 
-For spring boot expose /actuator/prometheus and add the label and port name to a service
+For spring boot expose /actuator/prometheus api and add the label and port name to a service
 
 ```yaml
 labels:
@@ -32,5 +42,6 @@ TODO:
 6. configure efk
 7. switch interservice communication to https
 8. enable registry
-9. make external services ip static
-10. http redirect to https(https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/manifest, https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#https_redirect)
+9. make external services ip static/use single ip
+10. http redirect to https(https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/manifest
+    , https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#https_redirect)
