@@ -45,3 +45,28 @@ output "zone" {
   description = "Zone of GKE cluster"
   value       = join(",", var.zones)
 }
+
+output "domain" {
+  description = "Infrastructure domain"
+  value       = var.ingress_domain
+}
+
+output "jenkins_domain" {
+  description = "Jenkins domain"
+  value       = local.domains.jenkins_domain
+}
+
+output "sonar_domain" {
+  description = "Sonar domain"
+  value       = local.domains.sonar_domain
+}
+
+output "grafana_domain" {
+  description = "Grafana domain"
+  value       = local.domains.grafana_domain
+}
+
+output "kibana_domain" {
+  description = "Kibana domain"
+  value       = local.domains.kibana_domain
+}

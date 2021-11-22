@@ -16,23 +16,23 @@ extraEnvs:
         name: kibana-encryption-key
         key: encryptionkey
 
-kibanaConfig:
-  kibana.yml: |
-    server.ssl:
-          enabled: true
-          key: /usr/share/kibana/config/certs/elastic-certificate.pem
-          certificate: /usr/share/kibana/config/certs/elastic-certificate.pem
-    xpack.security.encryptionKey: ${KIBANA_ENCRYPTION_KEY}
-    xpack.security.session.idleTimeout: "1h"
-    xpack.security.session.lifespan: "30d"
-    elasticsearch.ssl:
-      certificateAuthorities: /usr/share/kibana/config/certs/elastic-certificate.pem
-      verificationMode: certificate
-
-
-protocol: https
-
-secretMounts:
-  - name: elastic-ca
-    secretName: elastic-certificate-pem
-    path: /usr/share/kibana/config/certs
+#kibanaConfig:
+#  kibana.yml: |
+#    server.ssl:
+#          enabled: true
+#          key: /usr/share/kibana/config/certs/elastic-certificate.pem
+#          certificate: /usr/share/kibana/config/certs/elastic-certificate.pem
+#    xpack.security.encryptionKey: ${KIBANA_ENCRYPTION_KEY}
+#    xpack.security.session.idleTimeout: "1h"
+#    xpack.security.session.lifespan: "30d"
+#    elasticsearch.ssl:
+#      certificateAuthorities: /usr/share/kibana/config/certs/elastic-certificate.pem
+#      verificationMode: certificate
+#
+#
+#protocol: https
+#
+#secretMounts:
+#  - name: elastic-ca
+#    secretName: elastic-certificate-pem
+#    path: /usr/share/kibana/config/certs

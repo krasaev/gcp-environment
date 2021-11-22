@@ -1,7 +1,8 @@
 controller:
-  tag: "2.320-jdk11"
+  tag: "2.321-jdk11"
   installPlugins:
-    - kubernetes:1.30.7
+    - bouncycastle-api:2.25
+    - kubernetes:1.30.10
     - workflow-job:2.42
     - workflow-aggregator:2.6
     - credentials-binding:1.27
@@ -10,11 +11,12 @@ controller:
     - google-source-plugin:0.4
     - google-kubernetes-engine:0.8.6
     - google-storage-plugin:1.5.4.1
-    - blueocean:1.25.1
+    - blueocean:1.25.2
     - job-dsl:1.78.1
     - configuration-as-code:1.54
     - github-oauth:0.34
     - ansicolor:1.0.1
+    - sonar:2.14
   resources:
     requests:
       cpu: "50m"
@@ -104,6 +106,7 @@ controller:
                     }
                 }
 agent:
+  tag: 4.11-1-jdk17-preview
   podTemplates:
     terraform: |
       - name: terraform
@@ -123,10 +126,10 @@ agent:
   resources:
     requests:
       cpu: "500m"
-      memory: "256Mi"
+      memory: "512Mi"
     limits:
       cpu: "1"
-      memory: "512Mi"
+      memory: "1Gi"
 
 serviceAccount:
   name: cd-jenkins
