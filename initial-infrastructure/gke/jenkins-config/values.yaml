@@ -1,5 +1,5 @@
 controller:
-  tag: "2.321-jdk11"
+  tag: "2.322-jdk11"
   installPlugins:
     - bouncycastle-api:2.25
     - kubernetes:1.30.10

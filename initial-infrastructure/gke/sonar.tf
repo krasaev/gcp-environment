@@ -35,6 +35,7 @@ resource "helm_release" "sonar" {
           }
         ]
       }
+
     })
   ]
 }

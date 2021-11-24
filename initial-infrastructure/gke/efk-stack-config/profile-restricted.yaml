@@ -1,0 +1,9 @@
+createClusterScopedResources: false
+
+config:
+  validateStorageClass: false
+
+installCRDs: false
+
+webhook:
+  enabled: false

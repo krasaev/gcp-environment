@@ -18,7 +18,7 @@
 <h2>Destroying infrastructure</h2>
 
 1. cd gcp-environment/initial-infrastructure
-2. run ./destroy.sh
+2. run ./destroy.sh /path/to/config.properties
 
 <h2>Service monitoring:</h2>
 
@@ -35,11 +35,10 @@ labels:
 TODO:
 
 1. fix todos
-2. fix efk cert generation
 3. polish init/destroy scripts
 4. gke nodes must not use public ip's, cloud nat
 5. add cloud armor
-6. configure efk
+6. configure filebeat
 7. switch interservice communication to https
 8. enable registry
 9. make external services ip static/use single ip

@@ -23,6 +23,7 @@ resource "helm_release" "prometheus" {
   values = [
     file("${path.module}/prometheus-stack-config/values.yaml"), yamlencode({
       grafana : {
+        adminPassword : random_password.grafana_password.result
         ingress : {
           enabled : true
           annotations : {
@@ -35,4 +36,9 @@ resource "helm_release" "prometheus" {
       }
     })
   ]
+}
+
+resource "random_password" "grafana_password" {
+  length  = 24
+  special = true
 }
