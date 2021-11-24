@@ -42,5 +42,3 @@ TODO:
 7. switch interservice communication to https
 8. enable registry
 9. make external services ip static/use single ip
-10. http redirect to https(https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/manifest
-    , https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#https_redirect)

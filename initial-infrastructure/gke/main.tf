@@ -64,7 +64,7 @@ module "gke" {
   service_account          = "create"
   identity_namespace       = "${module.enable-google-apis.project_id}.svc.id.goog"
   node_metadata            = "GKE_METADATA_SERVER"
-  node_pools = [
+  node_pools               = [
     {
       name         = "env-pool"
       machine_type = "e2-standard-2"
@@ -73,7 +73,7 @@ module "gke" {
       auto_upgrade = true
     }
   ]
-  depends_on = [google_compute_ssl_certificate.env_domain_cert]
+  depends_on               = [google_compute_ssl_certificate.env_domain_cert]
 }
 
 # allow GKE to pull images from GCR
@@ -95,7 +95,7 @@ resource "kubernetes_secret" "gke_config" {
 }
 
 locals {
-  domains = {
+  domains      = {
     jenkins_domain = "jenkins.${var.ingress_domain}"
     grafana_domain = "grafana.${var.ingress_domain}"
     sonar_domain   = "sonar.${var.ingress_domain}"
