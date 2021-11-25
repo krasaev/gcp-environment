@@ -61,7 +61,7 @@ resource "helm_release" "jenkins" {
   repository = "https://charts.jenkins.io"
   chart      = "jenkins"
   version    = "3.8.8"
-  timeout    = 1200
+  timeout    = 500
   namespace  = kubernetes_secret.jenkins_secrets.metadata[0].namespace
 
   values = [

@@ -16,8 +16,8 @@ resource "helm_release" "sonar" {
   name       = "sonarqube"
   repository = "https://sonarsource.github.io/helm-chart-sonarqube"
   chart      = "sonarqube"
-  version    = "1.1.9"
-  timeout    = 1200
+  version    = "1.2.0"
+  timeout    = 500
   namespace  = kubernetes_namespace.sonar_namespace.metadata[0].name
 
   values = [

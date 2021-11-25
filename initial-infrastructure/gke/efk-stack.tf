@@ -30,7 +30,7 @@ resource "helm_release" "eck_operator_crds" {
   repository = "https://helm.elastic.co"
   chart      = "eck-operator-crds"
   version    = "1.8.0"
-  timeout    = 1200
+  timeout    = 500
 }
 
 resource "helm_release" "eck_operator" {
@@ -38,7 +38,7 @@ resource "helm_release" "eck_operator" {
   repository = "https://helm.elastic.co"
   chart      = "eck-operator"
   version    = "1.8.0"
-  timeout    = 1200
+  timeout    = 500
   namespace  = kubernetes_namespace.elastic_system.metadata[0].name
   values     = [file("${path.module}/efk-stack-config/profile-restricted.yaml")]
 
