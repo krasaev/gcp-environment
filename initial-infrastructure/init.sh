@@ -102,15 +102,20 @@ terraform apply -auto-approve \
 
 echo "--- Terraform has been applied. Getting servers urls..."
 
-export ZONE=$(terraform output -raw zone)
-export CLUSTER_NAME=$(terraform output -raw cluster_name)
-gcloud container clusters get-credentials ${CLUSTER_NAME} --zone=${ZONE} --project=${PROJECT_ID}
+gcloud container clusters get-credentials "$(terraform output -raw cluster_name)" --zone="$(terraform output -raw zone)" --project="${PROJECT_ID}"
+
 JENKINS_ADDRESS=$(terraform output -raw jenkins_domain)
 JENKINS_IP=$(kubectl --namespace jenkins get ingress jenkins -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 JENKINS_PASSWORD=$(kubectl --namespace jenkins get secret jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode)
+
 GRAFANA_ADDRESS=$(terraform output -raw grafana_domain)
 GRAFANA_IP=$(kubectl --namespace monitoring get ingress kube-prometheus-stack-grafana -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 GRAFANA_PASSWORD=$(kubectl --namespace monitoring get secret kube-prometheus-stack-grafana -o jsonpath="{.data.admin-password}" | base64 --decode)
+
+KIBANA_ADDRESS=$(terraform output -raw kibana_domain)
+KIBANA_IP=$(kubectl --namespace logging get ingress kibana-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+KIBANA_PASSWORD=$(kubectl --namespace logging get secret elasticsearch-es-elastic-user -o jsonpath="{.data.elastic}" | base64 --decode)
+
 SONAR_ADDRESS=$(terraform output -raw sonar_domain)
 SONAR_IP=$(kubectl --namespace sonarqube get ingress sonarqube-sonarqube -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
@@ -118,6 +123,7 @@ echo
 printf "%-15s %30s %40s\n" "IP" "Address" "Credentials" \
   "$JENKINS_IP" "https://$JENKINS_ADDRESS" "admin/$JENKINS_PASSWORD" \
   "$GRAFANA_IP" "https://$GRAFANA_ADDRESS" "admin/$GRAFANA_PASSWORD" \
+  "$KIBANA_IP" "https://$KIBANA_ADDRESS" "elastic/$KIBANA_PASSWORD" \
   "$SONAR_IP" "https://$SONAR_ADDRESS" "admin/admin"
 
 echo

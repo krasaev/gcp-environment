@@ -1,0 +1,32 @@
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: ${namespace}
+  labels:
+    app: kibana
+spec:
+  http:
+    service:
+      metadata:
+        labels:
+          app: kibana
+        annotations:
+          cloud.google.com/app-protocols: '{"https":"HTTPS"}'
+          service.alpha.kubernetes.io/app-protocols: '{"https":"HTTPS"}'
+          cloud.google.com/neg: '{"ingress": true}'
+  version: ${elastic_version}
+  count: 1
+  elasticsearchRef:
+    name: elasticsearch
+  config:
+    server.publicBaseUrl: https://${kibana_domain}
+  podTemplate:
+    spec:
+      containers:
+        - name: kibana
+          readinessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: "/login"
+              port: 5601

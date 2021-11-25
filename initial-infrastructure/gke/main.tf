@@ -64,7 +64,7 @@ module "gke" {
   service_account          = "create"
   identity_namespace       = "${module.enable-google-apis.project_id}.svc.id.goog"
   node_metadata            = "GKE_METADATA_SERVER"
-  node_pools = [
+  node_pools               = [
     {
       name         = "env-pool"
       machine_type = "e2-standard-2"
@@ -73,7 +73,7 @@ module "gke" {
       auto_upgrade = true
     }
   ]
-  depends_on = [google_compute_ssl_certificate.env_domain_cert]
+  depends_on               = [google_compute_ssl_certificate.env_domain_cert]
 }
 
 # allow GKE to pull images from GCR
@@ -95,7 +95,7 @@ resource "kubernetes_secret" "gke_config" {
 }
 
 locals {
-  domains = {
+  domains      = {
     jenkins_domain = "jenkins.${var.ingress_domain}"
     grafana_domain = "grafana.${var.ingress_domain}"
     sonar_domain   = "sonar.${var.ingress_domain}"
@@ -103,7 +103,7 @@ locals {
     self_domain    = var.ingress_domain
   }
   domains_cert = {
-    priv_key = var.ingress_domain_cert_private_key != "" ? file(var.ingress_domain_cert_private_key) : tls_self_signed_cert.domain_self_signed_cert[0].private_key_pem
+    priv_key = var.ingress_domain_cert_private_key != "" ? file(var.ingress_domain_cert_private_key) : tls_private_key.domain_self_signed_private_key[0].private_key_pem
     cert     = var.ingress_domain_cert_public_key != "" ? file(var.ingress_domain_cert_public_key) : tls_self_signed_cert.domain_self_signed_cert[0].cert_pem
   }
 }
