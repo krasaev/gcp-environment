@@ -54,6 +54,7 @@ data "kubectl_path_documents" "efk_definitions" {
   vars = {
     namespace     = var.efk_namespace
     kibana_domain = local.domains.kibana_domain
+    elastic_version = "7.15.2"
   }
 }
 

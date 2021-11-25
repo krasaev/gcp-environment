@@ -15,7 +15,7 @@ spec:
           cloud.google.com/app-protocols: '{"https":"HTTPS"}'
           service.alpha.kubernetes.io/app-protocols: '{"https":"HTTPS"}'
           cloud.google.com/neg: '{"ingress": true}'
-  version: 7.15.2
+  version: ${elastic_version}
   count: 1
   elasticsearchRef:
     name: elasticsearch
