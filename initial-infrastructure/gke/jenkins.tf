@@ -53,6 +53,8 @@ resource "kubernetes_secret" "jenkins_secrets" {
     git-org-name    = var.git-org-name
     project-id      = module.enable-google-apis.project_id
     jenkins-tf-ksa  = module.jenikins_identity.k8s_service_account_name
+    kubernetes_endpoint = "https://${module.gke.endpoint}"
+    ca_certificate      = module.gke.ca_certificate
   }
 }
 

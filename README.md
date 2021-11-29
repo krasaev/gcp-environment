@@ -1,10 +1,10 @@
 <h2>Initializing infrastructure:</h2>
 
 1. clone the repo into gcloud shell
-2. prepare config file
+2. prepare config file(used from init.sh)
     ```properties
     domain.name=example.com
-    # leave domain.cert.* empty to generate self-signed certificates
+    # leave domain.cert.* empty to generate self-signed certificates automaticly
     domain.cert.private-key-file=
     domain.cert.public-key-file=
     github.organization.name=example
@@ -13,7 +13,7 @@
     ```
 3. cd gcp-environment/initial-infrastructure
 4. run ./init.sh /path/to/config.properties
-5. use provided service's url/creds
+5. use provided service's url/creds(from gcloud shell console)
 
 <h2>Destroying infrastructure</h2>
 
