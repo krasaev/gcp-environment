@@ -19,14 +19,7 @@ controller:
     - sonar:2.14
     - command-launcher:1.6
     - jacoco:3.3.0
-  resources:
-    requests:
-      cpu: "50m"
-      memory: "1024Mi"
-    limits:
-      cpu: "2"
-      memory: "2Gi"
-  javaOpts: "-Xms1024m -Xmx1024m"
+    - pipeline-utility-steps:2.11.0
   additionalExistingSecrets:
     - name: jenkins-config
       keyName: git-app-id
@@ -38,6 +31,14 @@ controller:
       keyName: project-id
     - name: jenkins-config
       keyName: jenkins-tf-ksa
+    - name: jenkins-config
+      keyName: docker-image-repository-url
+    - name: jenkins-config
+      keyName: helm-image-repository-url
+    - name: jenkins-config
+      keyName: maven-repository-url
+    - name: jenkins-config
+      keyName: cluster-name
   JCasC:
     defaultConfig: true
     configScripts:
@@ -109,6 +110,28 @@ controller:
                 }
 agent:
   tag: 4.11-1-jdk17-preview
+  volumes:
+    - type: HostPath
+      hostPath: /var/run/docker.sock
+      mountPath: /var/run/docker.sock
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "512Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+  envVars:
+    - name: CLUSTER_NAME
+      value: ${jenkins-config-cluster-name}
+    - name: IMAGE_REPOSITORY_URL
+      value: ${jenkins-config-docker-image-repository-url}
+    - name: HELM_IMAGE_REPOSITORY_URL
+      value: ${jenkins-config-helm-image-repository-url}
+    - name: MAVEN_REPOSITORY_URL
+      value: ${jenkins-config-maven-repository-url}
+    - name: HELM_EXPERIMENTAL_OCI
+      value: "1"
   podTemplates:
     terraform: |
       - name: terraform
@@ -122,16 +145,9 @@ agent:
             args: "cat"
             ttyEnabled: true
             resourceRequestCpu: "100m"
-            resourceLimitCpu: "256Mi"
-            resourceRequestMemory: "500Mi"
+            resourceLimitCpu: "1"
+            resourceRequestMemory: "256Mi"
             resourceLimitMemory: "512Mi"
-  resources:
-    requests:
-      cpu: "500m"
-      memory: "512Mi"
-    limits:
-      cpu: "1"
-      memory: "1Gi"
 
 serviceAccount:
   name: cd-jenkins
