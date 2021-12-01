@@ -4,16 +4,14 @@ module "enable-google-apis" {
 
   project_id = var.project_id
 
-  // TODO revise
   activate_apis = [
     "compute.googleapis.com",
     "iam.googleapis.com",
     "cloudresourcemanager.googleapis.com",
-    "containerregistry.googleapis.com",
-    "container.googleapis.com",
     "storage-component.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
+    "artifactregistry.googleapis.com",
   ]
 }
 
@@ -76,7 +74,6 @@ module "gke" {
   depends_on               = [google_compute_ssl_certificate.env_domain_cert]
 }
 
-# allow GKE to pull images from GCR
 resource "google_project_iam_member" "gke_member" {
   project = module.enable-google-apis.project_id
   role    = "roles/storage.objectViewer"
@@ -130,12 +127,12 @@ resource "random_id" "certificate" {
 }
 
 resource "tls_private_key" "domain_self_signed_private_key" {
-  count     = fileexists("${path.module}/domain_private.key") ? 0 : 1
+  count     = var.ingress_domain_cert_private_key != "" ? 0 : 1
   algorithm = "RSA"
 }
 
 resource "tls_self_signed_cert" "domain_self_signed_cert" {
-  count           = fileexists("${path.module}/domain_private.key") ? 0 : 1
+  count           = length(tls_private_key.domain_self_signed_private_key)
   key_algorithm   = "RSA"
   private_key_pem = tls_private_key.domain_self_signed_private_key[0].private_key_pem
 
@@ -152,4 +149,44 @@ resource "tls_self_signed_cert" "domain_self_signed_cert" {
     "digital_signature",
     "server_auth",
   ]
+}
+
+resource "google_artifact_registry_repository" "oci_image_repo" {
+  provider = google-beta
+
+  location = var.region
+  repository_id = "oci-image-repo"
+  description = "OCI images repository"
+  format = "DOCKER"
+  project = module.enable-google-apis.project_id
+}
+
+resource "google_artifact_registry_repository" "maven_repo" {
+  provider = google-beta
+
+  location = var.region
+  repository_id = "maven-repo"
+  description = "Maven repository"
+  format = "MAVEN"
+  project = module.enable-google-apis.project_id
+}
+
+resource "google_artifact_registry_repository_iam_member" "gke_image_repo_role" {
+  provider = google-beta
+
+  project = google_artifact_registry_repository.oci_image_repo.project
+  location = google_artifact_registry_repository.oci_image_repo.location
+  repository = google_artifact_registry_repository.oci_image_repo.name
+  role = "roles/artifactregistry.writer"
+  member = "serviceAccount:${module.gke.service_account}"
+}
+
+resource "google_artifact_registry_repository_iam_member" "gke_maven_repo_role" {
+  provider = google-beta
+
+  project = google_artifact_registry_repository.maven_repo.project
+  location = google_artifact_registry_repository.maven_repo.location
+  repository = google_artifact_registry_repository.maven_repo.name
+  role = "roles/artifactregistry.writer"
+  member = "serviceAccount:${module.gke.service_account}"
 }

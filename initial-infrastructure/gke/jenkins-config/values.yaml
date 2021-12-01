@@ -2,7 +2,7 @@ controller:
   tag: "2.322-jdk11"
   installPlugins:
     - bouncycastle-api:2.25
-    - kubernetes:1.30.10
+    - kubernetes:1.30.11
     - workflow-job:2.42
     - workflow-aggregator:2.6
     - credentials-binding:1.27
@@ -17,13 +17,15 @@ controller:
     - github-oauth:0.34
     - ansicolor:1.0.1
     - sonar:2.14
+    - command-launcher:1.6
+    - jacoco:3.3.0
   resources:
     requests:
       cpu: "50m"
       memory: "1024Mi"
     limits:
-      cpu: "1"
-      memory: "1024Mi"
+      cpu: "2"
+      memory: "2Gi"
   javaOpts: "-Xms1024m -Xmx1024m"
   additionalExistingSecrets:
     - name: jenkins-config

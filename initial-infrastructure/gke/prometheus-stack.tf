@@ -17,7 +17,7 @@ resource "helm_release" "prometheus" {
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
   version    = "19.2.3"
-  timeout    = 1200
+  timeout    = 500
   namespace  = kubernetes_namespace.prometheus_namespace.metadata[0].name
 
   values = [

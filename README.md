@@ -34,11 +34,12 @@ labels:
 
 TODO:
 
-1. fix todos
-3. polish init/destroy scripts
-4. gke nodes must not use public ip's, cloud nat
-5. add cloud armor
-6. configure filebeat
-7. switch interservice communication to https
-8. enable registry
-9. make external services ip static/use single ip
+- fix todos
+- polish init/destroy scripts
+- gke nodes must not use public ip's, cloud nat
+- add cloud armor
+- configure filebeat
+- switch interservice communication to https
+- enable registry
+- make external services ip static/use single ip
+- 
