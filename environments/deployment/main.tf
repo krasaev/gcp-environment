@@ -12,16 +12,10 @@ terraform {
 }
 
 provider "kubernetes" {
-  config_path = "C:/Users/Alexander_Frolov1/.kube/config"
 }
 
 provider "helm" {
-  kubernetes {
-    config_path = "C:/Users/Alexander_Frolov1/.kube/config"
-  }
 }
-
-#----------------------
 
 resource "kubernetes_namespace" "awesome-ordering-system" {
   metadata {
@@ -42,5 +36,4 @@ resource "helm_release" "dependencies" {
   name       = "dependencies"
   chart      = "./awesome-ordering-system"
   dependency_update = true
-
 }
