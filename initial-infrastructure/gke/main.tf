@@ -10,6 +10,7 @@ module "enable-google-apis" {
     "cloudresourcemanager.googleapis.com",
     "storage-component.googleapis.com",
     "logging.googleapis.com",
+    "container.googleapis.com",
     "monitoring.googleapis.com",
     "artifactregistry.googleapis.com",
   ]

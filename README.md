@@ -42,4 +42,5 @@ TODO:
 - switch interservice communication to https
 - enable registry
 - make external services ip static/use single ip
-- 
+- add SA to jenkins agent
+- custom jenkins agent

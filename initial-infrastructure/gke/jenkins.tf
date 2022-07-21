@@ -7,7 +7,7 @@ resource "kubernetes_namespace" "jenkins_namespace" {
     labels = {
       namespace = var.jenkins_namespace
     }
-    name = var.jenkins_namespace
+    name   = var.jenkins_namespace
   }
   depends_on = [module.gke]
 }
@@ -42,6 +42,11 @@ resource "google_project_iam_member" "jenkins-project" {
   member = module.jenikins_identity.gcp_service_account_fqn
 }
 
+locals {
+  image-repository = "${google_artifact_registry_repository.oci_image_repo.location}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.oci_image_repo.name}"
+  maven-repository = "artifactregistry://${google_artifact_registry_repository.maven_repo.location}-maven.pkg.dev/${var.project_id}/${google_artifact_registry_repository.maven_repo.name}"
+}
+
 resource "kubernetes_secret" "jenkins_secrets" {
   metadata {
     name      = "jenkins-config"
@@ -51,6 +56,10 @@ resource "kubernetes_secret" "jenkins_secrets" {
     git-app-id      = var.git-app-id
     git-private-key = var.git-private-key
     git-org-name    = var.git-org-name
+    cluster-name    = module.gke.name
+    docker-image-repository-url = "${local.image-repository}/images/"
+    helm-image-repository-url = "${local.image-repository}/charts/"
+    maven-repository-url = local.maven-repository
     project-id      = module.enable-google-apis.project_id
     jenkins-tf-ksa  = module.jenikins_identity.k8s_service_account_name
   }
