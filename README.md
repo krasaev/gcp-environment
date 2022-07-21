@@ -1,3 +1,5 @@
+<h1>terraform&gcp playground</h1>
+
 <h2>Initializing infrastructure:</h2>
 
 1. clone the repo into gcloud shell
